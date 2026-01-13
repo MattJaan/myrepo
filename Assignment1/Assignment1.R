@@ -19,6 +19,8 @@ for(wells in names(df_p1r1)[2:ncol(df_p1r1)]){
     regress_p1r1[[wells]]<-lm(get(wells)~df_p1r1$Time..sec., data=df_p1r1)
 }
 
+## BMB: you can probably do this more elegantly
+
 # Create an open list  
 slope_p1r1 <-list()
 
