@@ -2,6 +2,8 @@
 # p commonly stands for plate
 # r commonly stands for replicate
 
+library(dplyr)
+
 # Read in csv files
 df_p1r1<-read.csv("HHP001R1.csv")
 df_p1r2<-read.csv("HHP001R2.csv")
@@ -85,4 +87,44 @@ df_averages <- rbind(plate1_avg, plate2_avg)
 
 # Write a csv as an output using the combined average dataframe, with row 
 # labels to decipher rows for each plate
+# HEAD
 saveRDS(df_averages, file="Slope_averages.rds")
+
+write.csv(x=df_averages, file="Slope_averages.csv", row.names = TRUE)
+
+## mark: 2
+
+## alternative workflow
+csv_files <- list.files(pattern = "\\.csv")
+data_list <- lapply(csv_files, read.csv)
+
+## run lm() on every column (but the first) of a data frame,
+## return a vector of the slopes
+run_lms <- function(data) {
+    vars <- names(data)[-1]
+    coefs <- list()
+    for (nm in vars) {
+        formulas <- reformulate("Time..sec.", response = nm)
+        fit <- lm(formulas, data = data)
+        coefs[[nm]] <- coef(fit)[[2]]
+    }
+    unlist(coefs)
+}
+
+## extract plate number info from file names
+plate_num <- stringr::str_extract(csv_files, "P00[1-2]") |>
+    stringr::str_remove("P00")
+
+## squash together, add plate number info
+combined_data <- 
+    (lapply(data_list, run_lms)
+        |> dplyr::bind_rows()
+        |> dplyr::mutate(plate_num, .before = 1)
+    )
+
+## summarise
+combined_data |> summarise(across(!matches("plate_num"), mean), .by  = plate_num)
+
+## mark: 2
+
+
