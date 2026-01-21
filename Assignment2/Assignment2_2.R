@@ -10,4 +10,5 @@ df <- read_rds("Formatted_Data.rds")
 ggplot(data = df, mapping = aes(x = protein, y = slope, color = assay)) +
   geom_boxplot()
 
+## JD: Didn't follow as well as I would have liked, but looks interesting by the end. Any thoughts from today about how you could improve this picture?
 
