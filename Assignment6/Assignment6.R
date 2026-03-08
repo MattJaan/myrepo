@@ -12,6 +12,7 @@ slopes$assay<-as.character(slopes$assay)
 #Sort the factors to better order
 slopes$assay <- factor(slopes$assay, levels = c("negative", "No protein", "Reductase","NADPH","positive"))
 
+## JD: What am I seeing here? There is no explanation of the models or the questions here or in the README.
 
 lm_all<- lm(slope~assay*protein,data=slopes)
 
